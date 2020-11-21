@@ -22,7 +22,7 @@ CORS(app)
 '''
     GET /drinks
         it should be a public endpoint
-        it should contain only the drink.short() data
+        it should contain only the drink.long() data
         representation
     returns status code 200 and json {"success": True, "drinks": drinks}
     where drinks is the list of drinks
@@ -35,7 +35,7 @@ def get_drinks():
     drinks = Drink.query.all()
     return jsonify({
         'success': True,
-        'drinks': [drink.short() for drink in drinks],
+        'drinks': [drink.long() for drink in drinks],
     }), 200
 
 
@@ -50,8 +50,8 @@ def get_drinks():
 
 
 @app.route('/drinks-detail')
-@requires_auth(permission='get:drinks-detail')
-def get_drinks_details(user):
+@requires_auth('get:drinks-detail')
+def get_drinks_details():
     drinks = Drink.query.all()
     return jsonify({
         'success': True,
@@ -148,7 +148,7 @@ def update_drink(drink_id):
 
 
 @app.route("/drinks/<int:drink_id>", methods=["DELETE"])
-@requires_auth(permission="delete:drinks")
+@requires_auth("delete:drinks")
 def delete_drink(drink_id):
     # Get the drink to be deleted or None if not exists.
     drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
@@ -192,4 +192,4 @@ def auth_error(e):
         "success": False,
         "error": e.status_code,
         "message": e.error['description'],
-    }), e.status_code
+    }), 401
